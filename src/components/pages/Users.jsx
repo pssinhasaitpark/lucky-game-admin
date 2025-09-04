@@ -1,41 +1,34 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import CommonTable from "../ui/CommonTable.jsx";
+import UserRegistrationDialog from "../ui/dialog/UserRegistrationDialog.jsx";
+import Loader from "../ui/Loader.jsx";
 import {
   fetchApprovedUsers,
   fetchPendingUsers,
   approveUser,
-  // deleteUser,
 } from "../../redux/slice/userSlice.js";
-
-// Circular Loader Component
-const CircularLoader = () => (
-  <div className="fixed inset-0 flex items-center justify-center bg-opacity-50 ">
-    <div className="flex flex-col items-center bg-white p-6 rounded-lg shadow-lg">
-      <div className="loader ease-linear rounded-full border-4 border-t-4 border-[#FD7F2C] border-t-transparent h-12 w-12 mb-4"></div>
-    </div>
-  </div>
-);
+import { Plus } from "lucide-react";
 
 const Users = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate(); // Add this line
   const [filter, setFilter] = useState("approved");
   const [approvingUserId, setApprovingUserId] = useState(null);
   const [deletingUserId, setDeletingUserId] = useState(null);
   const [isApproving, setIsApproving] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
-
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const approvedUsers = useSelector((state) => state.user.approvedUsers);
   const pendingUsers = useSelector((state) => state.user.pendingUsers || []);
   const error = useSelector((state) => state.user.error);
 
-  // Fetch users on component mount
   useEffect(() => {
     dispatch(fetchApprovedUsers());
     dispatch(fetchPendingUsers());
   }, [dispatch]);
 
-  // Fetch users whenever the filter changes
   const fetchFilteredUsers = async () => {
     setIsFetching(true);
     try {
@@ -83,7 +76,11 @@ const Users = () => {
     }
   };
 
-  // Sort approved users to show newly approved users at the top
+  // Add this function
+  const handleUserClick = (userId) => {
+    navigate(`/users/${userId}`);
+  };
+
   const sortedApprovedUsers = [...approvedUsers].sort((a, b) => {
     return new Date(b.createdAt) - new Date(a.createdAt);
   });
@@ -97,7 +94,10 @@ const Users = () => {
       title: "User Info",
       width: "30%",
       render: (user) => (
-        <div className="flex items-center space-x-3">
+        <div
+          className="flex items-center space-x-3 cursor-pointer"
+          onClick={() => handleUserClick(user._id)}
+        >
           <img
             src={`https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D`}
             alt={user.name}
@@ -144,14 +144,20 @@ const Users = () => {
           return (
             <div className="flex space-x-2">
               <button
-                onClick={() => handleApproveUser(user._id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleApproveUser(user._id);
+                }}
                 className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 disabled:bg-gray-400"
                 disabled={approvingUserId === user._id}
               >
                 {approvingUserId === user._id ? "Approving..." : "Approve"}
               </button>
               <button
-                // onClick={() => handleDeleteUser(user._id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // onClick={() => handleDeleteUser(user._id)}
+                }}
                 className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 disabled:bg-gray-400"
                 disabled={deletingUserId === user._id}
               >
@@ -162,11 +168,20 @@ const Users = () => {
         } else {
           return (
             <div className="flex space-x-2">
-              <button className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 disabled:bg-gray-400">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // Add edit logic here
+                }}
+                className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 disabled:bg-gray-400"
+              >
                 Edit
               </button>
               <button
-                // onClick={() => handleDeleteUser(user._id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // onClick={() => handleDeleteUser(user._id)}
+                }}
                 className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 disabled:bg-gray-400"
                 disabled={deletingUserId === user._id}
               >
@@ -178,14 +193,25 @@ const Users = () => {
       },
     },
   ];
-
+  if (isFetching || isApproving) {
+    return <Loader />;
+  }
   if (error) {
     return <p className="text-red-600">Error: {error}</p>;
   }
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-4">Users</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">Users</h2>
+        <button
+          onClick={() => setIsDialogOpen(true)}
+          className="flex items-center px-5 py-2 bg-orange-500 text-white rounded hover:bg-orange-700 disabled:opacity-50 transition"
+        >
+          <Plus className="w-3 h-3 mr-1" />
+          Create User
+        </button>
+      </div>
       <div className="mb-4">
         <label htmlFor="user-filter" className="mr-2 font-semibold">
           Show:
@@ -200,9 +226,12 @@ const Users = () => {
           <option value="pending">Pending Users</option>
         </select>
       </div>
-      {isFetching && <CircularLoader />}
-      {isApproving && <CircularLoader />}
-      <CommonTable columns={columns} data={usersToShow} />
+
+      <CommonTable columns={columns} data={usersToShow} rowsPerPage={10} />
+      <UserRegistrationDialog
+        open={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+      />
     </div>
   );
 };

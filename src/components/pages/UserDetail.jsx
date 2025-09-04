@@ -1,0 +1,319 @@
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchUserDetails } from "../../redux/slice/userDetailsSlice";
+import Loader from "../ui/Loader";
+
+const UserDetail = () => {
+  const { userId } = useParams();
+  const dispatch = useDispatch();
+  const [activeTab, setActiveTab] = useState("stats");
+
+  const [historyPage, setHistoryPage] = useState(1);
+  const [transactionsPage, setTransactionsPage] = useState(1);
+  const rowsPerPage = 10;
+
+  const {
+    user,
+    stats,
+    gameHistory = [],
+    transactions = [],
+    loading,
+    error,
+  } = useSelector((state) => state.userDetails);
+
+  useEffect(() => {
+    if (userId) dispatch(fetchUserDetails(userId));
+  }, [userId, dispatch]);
+
+  if (loading) return <Loader />;
+  if (error)
+    return <div className="text-center text-red-600 mt-10">Error: {error}</div>;
+  if (!user) return <div className="text-center mt-10">No user found</div>;
+
+  const paginate = (data, page) => {
+    const start = (page - 1) * rowsPerPage;
+    return data.slice(start, start + rowsPerPage);
+  };
+
+  const totalHistoryPages = Math.ceil(gameHistory.length / rowsPerPage);
+  const totalTransactionPages = Math.ceil(transactions.length / rowsPerPage);
+
+  return (
+    <div className="p-6 mx-auto" style={{ minHeight: "calc(100vh - 48px)" }}>
+      <h1 className="text-3xl font-bold mb-8 text-gray-800">User Details</h1>
+
+      {/* Main Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* User Info Card */}
+        <div className="bg-gray-50 rounded-xl shadow-md p-6 space-y-4">
+          <div className="flex items-center space-x-4 mb-6">
+            <div className="w-16 h-16 rounded-full bg-orange-500 text-white flex items-center justify-center text-3xl font-semibold">
+              {user.name.charAt(0).toUpperCase()}
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold text-gray-800">
+                {user.name}
+              </h2>
+              <p className="text-sm text-gray-600">{user.email}</p>
+            </div>
+          </div>
+          <div className="text-sm text-gray-700 space-y-2">
+            <p>
+              <strong>Mobile:</strong> {user.mobile || "-"}
+            </p>
+            <p>
+              <strong>User ID:</strong> {user.userId || "-"}
+            </p>
+            <p>
+              <strong>Role:</strong> {user.role || "User"}
+            </p>
+            <p>
+              <strong>Wallet:</strong> ₹{user.wallet ?? 0}
+            </p>
+            <p>
+              <strong>Status:</strong>{" "}
+              <span
+                className={
+                  user.isApproved ? "text-green-600" : "text-yellow-600"
+                }
+              >
+                {user.isApproved ? "Approved" : "Pending"}
+              </span>
+            </p>
+          </div>
+        </div>
+
+        {/* Tabs & Content */}
+        <div className="md:col-span-2 flex flex-col space-y-4">
+          {/* Tabs */}
+          <div className="flex space-x-3">
+            {["stats", "history", "transactions"].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-150 ${
+                  activeTab === tab
+                    ? "bg-orange-500 text-white"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+              >
+                {tab === "stats" && "Stats"}
+                {tab === "history" && "Game History"}
+                {tab === "transactions" && "Transactions"}
+              </button>
+            ))}
+          </div>
+
+          {/* Content */}
+          <div className="bg-gray-50 rounded-xl shadow-md p-6 flex-grow flex flex-col overflow-hidden">
+            {activeTab === "stats" && (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+                <StatBox label="Total Games" value={stats?.totalGames ?? 0} />
+                <StatBox label="Total Won" value={`₹${stats?.totalWon ?? 0}`} />
+                <StatBox
+                  label="Total Lost"
+                  value={`₹${stats?.totalLost ?? 0}`}
+                />
+                <StatBox label="Net" value={`₹${stats?.net ?? 0}`} />
+              </div>
+            )}
+
+            {(activeTab === "history" || activeTab === "transactions") && (
+              <div className="flex flex-col flex-grow overflow-hidden mt-2">
+                <div className="overflow-x-auto flex-grow overflow-y-auto max-h-full border border-gray-200 rounded">
+                  <table className="w-full text-sm min-w-[700px]">
+                    <thead className="bg-gray-100 text-gray-600 uppercase text-xs sticky top-0 z-10">
+                      <tr>
+                        {activeTab === "history" && (
+                          <>
+                            <th className="px-4 py-2 text-center border-b">
+                              Game ID
+                            </th>
+                            <th className="px-4 py-2 text-center border-b">
+                              Selected
+                            </th>
+                            <th className="px-4 py-2 text-center border-b">
+                              Bid
+                            </th>
+                            <th className="px-4 py-2 text-center border-b">
+                              Winning
+                            </th>
+                            <th className="px-4 py-2 text-center border-b">
+                              Result
+                            </th>
+                            <th className="px-4 py-2 text-center border-b">
+                              Win
+                            </th>
+                            <th className="px-4 py-2 text-center border-b">
+                              Date
+                            </th>
+                          </>
+                        )}
+                        {activeTab === "transactions" && (
+                          <>
+                            <th className="px-4 py-2 text-center border-b">
+                              Txn ID
+                            </th>
+                            <th className="px-4 py-2 text-center border-b">
+                              Type
+                            </th>
+                            <th className="px-4 py-2 text-center border-b">
+                              Amount
+                            </th>
+                            <th className="px-4 py-2 text-center border-b">
+                              New Balance
+                            </th>
+                            <th className="px-4 py-2 text-center border-b">
+                              Date
+                            </th>
+                          </>
+                        )}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {activeTab === "history" &&
+                        paginate(gameHistory, historyPage).map((game) => (
+                          <tr
+                            key={game.gameId}
+                            className="border-b hover:bg-orange-50"
+                          >
+                            <td className="px-4 py-2 text-center">
+                              {game.gameId.slice(0, 8)}...
+                            </td>
+                            <td className="px-4 py-2 text-center">
+                              {game.selectedNumber}
+                            </td>
+                            <td className="px-4 py-2 text-center">
+                              ₹{game.bidAmount}
+                            </td>
+                            <td className="px-4 py-2 text-center">
+                              {game.winningNumber}
+                            </td>
+                            <td
+                              className={`px-4 py-2 text-center capitalize font-semibold ${
+                                game.result === "win"
+                                  ? "text-green-600"
+                                  : "text-red-600"
+                              }`}
+                            >
+                              {game.result}
+                            </td>
+                            <td className="px-4 py-2 text-center">
+                              ₹{game.winAmount}
+                            </td>
+                            <td className="px-4 py-2 text-center">
+                              {new Date(game.timestamp).toLocaleString()}
+                            </td>
+                          </tr>
+                        ))}
+
+                      {activeTab === "transactions" &&
+                        paginate(transactions, transactionsPage).map((txn) => (
+                          <tr
+                            key={txn._id}
+                            className="border-b hover:bg-orange-50"
+                          >
+                            <td className="px-4 py-2 text-center">
+                              {txn._id.slice(0, 8)}...
+                            </td>
+                            <td
+                              className={`px-4 py-2 text-center capitalize font-semibold ${
+                                txn.transactionType === "deposit"
+                                  ? "text-green-600"
+                                  : "text-red-600"
+                              }`}
+                            >
+                              {txn.transactionType}
+                            </td>
+                            <td className="px-4 py-2 text-center">
+                              ₹{txn.amount}
+                            </td>
+                            <td className="px-4 py-2 text-center">
+                              ₹{txn.newBalance}
+                            </td>
+                            <td className="px-4 py-2 text-center">
+                              {new Date(txn.timestamp).toLocaleString()}
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                <Pagination
+                  currentPage={
+                    activeTab === "history" ? historyPage : transactionsPage
+                  }
+                  totalPages={
+                    activeTab === "history"
+                      ? totalHistoryPages
+                      : totalTransactionPages
+                  }
+                  onPageChange={
+                    activeTab === "history"
+                      ? setHistoryPage
+                      : setTransactionsPage
+                  }
+                />
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const StatBox = ({ label, value }) => (
+  <div className="text-center bg-white rounded-lg p-6 shadow flex flex-col justify-center">
+    <p className="text-gray-500 text-sm">{label}</p>
+    <p className="text-2xl font-bold text-gray-800">{value}</p>
+  </div>
+);
+
+const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+  if (totalPages <= 1) return null;
+
+  const pages = [];
+
+  for (let i = 1; i <= totalPages; i++) {
+    pages.push(i);
+  }
+
+  return (
+    <div className="flex justify-center space-x-2 mt-4">
+      <button
+        onClick={() => onPageChange(Math.max(currentPage - 1, 1))}
+        disabled={currentPage === 1}
+        className="px-3 py-1 rounded bg-gray-200 disabled:opacity-50 hover:bg-gray-300 transition"
+      >
+        Prev
+      </button>
+
+      {pages.map((page) => (
+        <button
+          key={page}
+          onClick={() => onPageChange(page)}
+          className={`px-3 py-1 rounded transition ${
+            page === currentPage
+              ? "bg-orange-500 text-white"
+              : "bg-gray-200 hover:bg-gray-300"
+          }`}
+        >
+          {page}
+        </button>
+      ))}
+
+      <button
+        onClick={() => onPageChange(Math.min(currentPage + 1, totalPages))}
+        disabled={currentPage === totalPages}
+        className="px-3 py-1 rounded bg-gray-200 disabled:opacity-50 hover:bg-gray-300 transition"
+      >
+        Next
+      </button>
+    </div>
+  );
+};
+
+export default UserDetail;

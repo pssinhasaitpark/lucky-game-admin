@@ -1,5 +1,25 @@
-// src/redux/slice/dashboardSlice.js
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axiosInstance from "../axios/axios.js"; // Make sure this path is correct
+
+// Thunk to call set-winning-number API
+export const setWinningNumber = createAsyncThunk(
+  "dashboard/setWinningNumber",
+  async (winningNumber, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post(
+        "/game/admin/set-winning-number",
+        {
+          winningNumber,
+        }
+      );
+      return response.data; // Assuming response contains { winningNumber: number }
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to set winning number"
+      );
+    }
+  }
+);
 
 const initialState = {
   sidebarOpen: false,
@@ -54,6 +74,11 @@ const initialState = {
     { id: 1, name: "Alice", game: "Golden Wheel", prize: "$5,000" },
     { id: 2, name: "Bob", game: "Lucky Cards", prize: "$3,200" },
   ],
+
+  // NEW state for setWinningNumber
+  setWinningNumberStatus: "idle", // idle | loading | succeeded | failed
+  setWinningNumberError: null,
+  latestWinningNumber: null,
 };
 
 const dashboardSlice = createSlice({
@@ -101,6 +126,21 @@ const dashboardSlice = createSlice({
     addWinner: (state, action) => {
       state.winners.push(action.payload);
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(setWinningNumber.pending, (state) => {
+        state.setWinningNumberStatus = "loading";
+        state.setWinningNumberError = null;
+      })
+      .addCase(setWinningNumber.fulfilled, (state, action) => {
+        state.setWinningNumberStatus = "succeeded";
+        state.latestWinningNumber = action.payload?.winningNumber || null;
+      })
+      .addCase(setWinningNumber.rejected, (state, action) => {
+        state.setWinningNumberStatus = "failed";
+        state.setWinningNumberError = action.payload;
+      });
   },
 });
 

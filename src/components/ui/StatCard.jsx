@@ -1,9 +1,11 @@
+// components/ui/StatCard.jsx
 import React from "react";
 
-const StatCard = ({ title, value, icon: Icon, trend, isPrimary }) => {
+const StatCard = ({ title, value, icon: Icon, trend, isPrimary, onClick }) => {
   return (
     <div
-      className={`flex justify-between items-center p-6 rounded-xl shadow-sm transition-all duration-300 ${
+      onClick={onClick}
+      className={`flex justify-between items-center p-6 rounded-xl shadow-sm transition-all duration-300 cursor-pointer ${
         isPrimary ? "bg-[#FD7F2C] text-white" : "bg-[#2b2b2b] text-white"
       }`}
     >
@@ -12,7 +14,6 @@ const StatCard = ({ title, value, icon: Icon, trend, isPrimary }) => {
         <p className="text-2xl font-bold">{value}</p>
         <p className="text-sm opacity-80 mt-1">{title}</p>
       </div>
-
       {/* Right section */}
       <div className="flex flex-col items-end">
         <div className="bg-white w-10 h-10 rounded-full flex items-center justify-center mb-2">

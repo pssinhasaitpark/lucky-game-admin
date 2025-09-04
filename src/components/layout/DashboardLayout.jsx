@@ -1,7 +1,7 @@
 import React from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
-import { closeSidebar } from "../../redux/slice/dashboardSlice.js"; // ✅ Import the correct action
+import { closeSidebar } from "../../redux/slice/dashboardSlice.js";
 
 const DashboardLayout = ({ children, state, dispatch, menuItems }) => {
   return (
@@ -13,13 +13,13 @@ const DashboardLayout = ({ children, state, dispatch, menuItems }) => {
       {state.sidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-          onClick={() => dispatch(closeSidebar())} // ✅ Use action
+          onClick={() => dispatch(closeSidebar())}
           aria-hidden="true"
         />
       )}
 
       {/* Main content area */}
-      <div className="flex-1 flex flex-col transition-all duration-300 ease-in-out">
+      <div className="flex-1 flex flex-col transition-all duration-300 ease-in-out ">
         {/* Header */}
         <Header state={state} dispatch={dispatch} />
 
