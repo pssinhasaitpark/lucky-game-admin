@@ -1,7 +1,28 @@
-import React from "react";
+import React, { useState } from "react";
 
-const CommonTable = ({ columns, data, className = "" }) => {
+const CommonTable = ({
+  columns,
+  data,
+  className = "",
+  rowsPerPage = 10,
+  onPageChange,
+}) => {
+  const [currentPage, setCurrentPage] = useState(1);
   const actionColumn = columns.find((col) => col.isAction);
+
+  const totalPages = Math.ceil(data.length / rowsPerPage);
+
+  const handlePageChange = (page) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+    if (onPageChange) onPageChange(page);
+  };
+
+  // Slice data for current page
+  const paginatedData = data.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
 
   return (
     <div
@@ -23,7 +44,7 @@ const CommonTable = ({ columns, data, className = "" }) => {
           </tr>
         </thead>
         <tbody>
-          {data.length === 0 && (
+          {paginatedData.length === 0 && (
             <tr>
               <td
                 colSpan={columns.length + (actionColumn ? 1 : 0)}
@@ -33,7 +54,7 @@ const CommonTable = ({ columns, data, className = "" }) => {
               </td>
             </tr>
           )}
-          {data.map((row) => (
+          {paginatedData.map((row) => (
             <tr
               key={row._id || row.id || Math.random().toString(36).substr(2, 9)}
               className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
@@ -46,6 +67,7 @@ const CommonTable = ({ columns, data, className = "" }) => {
                   {col.render ? col.render(row) : row[col.key]}
                 </td>
               ))}
+              {/* Uncomment below if actionColumn needed */}
               {/* {actionColumn && (
                 <td className="py-4 px-4 text-sm whitespace-nowrap">
                   {actionColumn.render(row)}
@@ -55,6 +77,44 @@ const CommonTable = ({ columns, data, className = "" }) => {
           ))}
         </tbody>
       </table>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex justify-center space-x-2 mt-4">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-3 py-1 rounded bg-gray-200 disabled:opacity-50"
+          >
+            Prev
+          </button>
+
+          {[...Array(totalPages)].map((_, idx) => {
+            const page = idx + 1;
+            return (
+              <button
+                key={page}
+                onClick={() => handlePageChange(page)}
+                className={`px-3 py-1 rounded ${
+                  page === currentPage
+                    ? "bg-orange-500 text-white"
+                    : "bg-gray-200 hover:bg-gray-300"
+                }`}
+              >
+                {page}
+              </button>
+            );
+          })}
+
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="px-3 py-1 rounded bg-gray-200 disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 };

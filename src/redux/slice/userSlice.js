@@ -1,3 +1,4 @@
+// userSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "../axios/axios.js";
 
@@ -15,6 +16,21 @@ export const loginAdmin = createAsyncThunk(
       return res.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Login failed");
+    }
+  }
+);
+
+// ✅ Register User Thunk
+export const registerUser = createAsyncThunk(
+  "user/registerUser",
+  async (userData, { rejectWithValue }) => {
+    try {
+      const res = await axiosInstance.post("/user/register", userData);
+      return res.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Registration failed"
+      );
     }
   }
 );
@@ -74,6 +90,8 @@ const initialState = {
   pendingUsers: [],
   loading: false,
   error: null,
+  registrationStatus: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
+  registrationError: null,
 };
 
 // ✅ Slice
@@ -85,6 +103,10 @@ const userSlice = createSlice({
       state.token = null;
       state.userInfo = null;
       localStorage.removeItem("token");
+    },
+    resetRegistrationStatus(state) {
+      state.registrationStatus = "idle";
+      state.registrationError = null;
     },
   },
   extraReducers: (builder) => {
@@ -103,7 +125,18 @@ const userSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-
+      // registerUser handlers
+      .addCase(registerUser.pending, (state) => {
+        state.registrationStatus = "loading";
+        state.registrationError = null;
+      })
+      .addCase(registerUser.fulfilled, (state) => {
+        state.registrationStatus = "succeeded";
+      })
+      .addCase(registerUser.rejected, (state, action) => {
+        state.registrationStatus = "failed";
+        state.registrationError = action.payload;
+      })
       // fetchApprovedUsers handlers
       .addCase(fetchApprovedUsers.pending, (state) => {
         state.loading = true;
@@ -117,7 +150,6 @@ const userSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-
       // fetchPendingUsers handlers
       .addCase(fetchPendingUsers.pending, (state) => {
         state.loading = true;
@@ -131,7 +163,6 @@ const userSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-
       // approveUser handlers
       .addCase(approveUser.pending, (state) => {
         state.loading = true;
@@ -140,20 +171,15 @@ const userSlice = createSlice({
       .addCase(approveUser.fulfilled, (state, action) => {
         state.loading = false;
         const { userId, approvedUserData } = action.payload;
-
-        // Remove from pendingUsers
         state.pendingUsers = state.pendingUsers.filter(
           (user) => user._id !== userId
         );
-
-        // Add to approvedUsers
-        // We'll add minimal data here, merge as needed
         const approvedUser = {
           _id: userId,
           userId: approvedUserData.userId,
           email: approvedUserData.email,
           wallet: approvedUserData.wallet,
-          name: "", // You might want to map or keep name/email consistent
+          name: "",
           mobile: "-",
           role: "user",
           isApproved: true,
@@ -167,5 +193,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { logout } = userSlice.actions;
+export const { logout, resetRegistrationStatus } = userSlice.actions;
 export default userSlice.reducer;

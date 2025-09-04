@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useLocation } from "react-router-dom";
 import {
   BarChart3,
   Users as UsersIcon,
@@ -9,7 +11,7 @@ import {
   Settings as SettingsIcon,
   Gamepad2,
 } from "lucide-react";
-
+import { Routes, Route } from "react-router-dom";
 import DashboardLayout from "./components/layout/DashboardLayout.jsx";
 import Dashboard from "./components/pages/Dashboard.jsx";
 import Games from "./components/pages/Games.jsx";
@@ -17,8 +19,9 @@ import Users from "./components/pages/Users.jsx";
 import Winners from "./components/pages/Winners.jsx";
 import Revenue from "./components/pages/Revenue.jsx";
 import Settings from "./components/pages/Settings.jsx";
-
+import UserDetail from "./components/pages/UserDetail.jsx";
 import { loginAdmin, fetchApprovedUsers } from "./redux/slice/userSlice.js";
+import { setActiveTab } from "./redux/slice/dashboardSlice.js";
 
 // Sidebar menu items
 const menuItems = [
@@ -42,7 +45,7 @@ const PAGE_MAP = {
 
 function App() {
   const dispatch = useDispatch();
-
+  const location = useLocation();
   // ⏬ Dashboard state
   const {
     activeTab,
@@ -53,7 +56,6 @@ function App() {
     users,
     winners,
   } = useSelector((state) => state.dashboard);
-
   // ⏬ User state (token, approvedUsers, loading)
   const { token, loading, approvedUsers } = useSelector((state) => state.user);
 
@@ -65,6 +67,24 @@ function App() {
       }
     });
   }, [dispatch]);
+
+  // Set active tab based on route
+  useEffect(() => {
+    const path = location.pathname;
+    if (path === "/") {
+      dispatch(setActiveTab("dashboard"));
+    } else if (path.startsWith("/users")) {
+      dispatch(setActiveTab("users"));
+    } else if (path.startsWith("/games")) {
+      dispatch(setActiveTab("games"));
+    } else if (path.startsWith("/winners")) {
+      dispatch(setActiveTab("winners"));
+    } else if (path.startsWith("/revenue")) {
+      dispatch(setActiveTab("revenue"));
+    } else if (path.startsWith("/settings")) {
+      dispatch(setActiveTab("settings"));
+    }
+  }, [location.pathname, dispatch]);
 
   // 📄 Render component based on active tab
   const renderPageContent = () => {
@@ -88,8 +108,17 @@ function App() {
         dispatch={dispatch}
         menuItems={menuItems}
       >
-        {renderPageContent()}
+        <Routes>
+          <Route path="/" element={renderPageContent()} />
+          <Route path="/users" element={<Users />} />
+          <Route path="/users/:userId" element={<UserDetail />} />
+          <Route path="/games" element={<Games />} />
+          <Route path="/winners" element={<Winners />} />
+          <Route path="/revenue" element={<Revenue />} />
+          <Route path="/settings" element={<Settings />} />
+        </Routes>
       </DashboardLayout>
+      <ToastContainer />
     </div>
   );
 }
