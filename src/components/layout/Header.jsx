@@ -8,7 +8,7 @@ const Header = ({ state, dispatch }) => (
       <div className="flex items-center space-x-4">
         <button
           onClick={() => dispatch(toggleSidebar())} // ✅ Use action
-          className="lg:hidden p-2 rounded-lg text-gray-600 hover:bg-yellow-100 transition-colors duration-200"
+          className="lg:hidden p-2 rounded-lg text-gray-600 hovers:bg-yellow-100 transition-colors duration-200"
         >
           <Menu className="w-6 h-6" />
         </button>

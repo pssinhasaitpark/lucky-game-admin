@@ -6,11 +6,8 @@ import Loader from "../ui/Loader.jsx";
 function Games() {
   const dispatch = useDispatch();
   const { gameStats, loading, error } = useSelector((state) => state.game);
-
   const [page, setPage] = useState(1);
-  const pageSize = 8; // Increased from 5 to 15
-
-  // Selected game to show in modal
+  const pageSize = 8;
   const [selectedGame, setSelectedGame] = useState(null);
 
   useEffect(() => {
@@ -27,13 +24,11 @@ function Games() {
   const clearErrorHandler = () => dispatch(clearError());
 
   return (
-    <div className="p-6 mx-auto">
-      <h1 className="text-3xl font-extrabold mb-6 text-black">Game Stats</h1>
-
+    <div className="container mx-auto ">
+      <h1 className="text-3xl font-extrabold mb-6 text-gray-800">Game Stats</h1>
       {loading && <Loader />}
-
       {error && (
-        <div className="mb-4 p-4 bg-red-100 text-red-700 rounded shadow">
+        <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-lg shadow">
           <p className="font-semibold">Error: {error}</p>
           <button
             onClick={clearErrorHandler}
@@ -43,13 +38,13 @@ function Games() {
           </button>
         </div>
       )}
-
       {!loading && !error && games.length === 0 && (
-        <p className="text-gray-500">No game stats available.</p>
+        <p className="text-gray-500 text-center py-8">
+          No game stats available.
+        </p>
       )}
-
       {!loading && !error && games.length > 0 && (
-        <div className="bg-white rounded-xl shadow-lg p-6 overflow-x-auto max-h-[700px]">
+        <div className="bg-white rounded-xl shadow-lg p-6 overflow-x-auto">
           <table className="min-w-full text-left text-sm font-medium text-gray-700">
             <thead>
               <tr className="border-b border-gray-200 bg-orange-50">
@@ -64,7 +59,7 @@ function Games() {
               {paginatedGames.map((game) => (
                 <tr
                   key={game.gameId}
-                  className="border-b hover:bg-orange-50 cursor-pointer"
+                  className="border-b hover:bg-gray-50 transition"
                 >
                   <td className="px-6 py-4 font-mono">{game.gameId}</td>
                   <td className="px-6 py-4">
@@ -91,7 +86,6 @@ function Games() {
               ))}
             </tbody>
           </table>
-
           {/* Pagination Controls */}
           <div className="flex justify-center gap-5 items-center mt-6">
             <button
@@ -99,7 +93,7 @@ function Games() {
               onClick={handlePrev}
               className={`px-4 py-2 rounded font-semibold ${
                 page === 1
-                  ? "bg-gray-300 cursor-not-allowed text-gray-500"
+                  ? "bg-gray-200 cursor-not-allowed text-gray-500"
                   : "bg-orange-500 text-white hover:bg-orange-600"
               }`}
             >
@@ -113,7 +107,7 @@ function Games() {
               onClick={handleNext}
               className={`px-4 py-2 rounded font-semibold ${
                 page === totalPages
-                  ? "bg-gray-300 cursor-not-allowed text-gray-500"
+                  ? "bg-gray-200 cursor-not-allowed text-gray-500"
                   : "bg-orange-500 text-white hover:bg-orange-600"
               }`}
             >
@@ -122,11 +116,10 @@ function Games() {
           </div>
         </div>
       )}
-
-      {/* Modal for user details */}
+      {/* Modal for game details */}
       {selectedGame && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+          className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4"
           aria-modal="true"
           role="dialog"
           aria-labelledby="modal-title"
@@ -134,52 +127,89 @@ function Games() {
           onClick={() => setSelectedGame(null)}
         >
           <div
-            className="bg-white rounded-lg shadow-lg max-w-3xl w-full p-6 relative"
+            className="bg-white rounded-lg shadow-xl max-w-4xl w-full p-6 relative max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <h2
               id="modal-title"
-              className="text-xl font-bold mb-4 text-orange-600"
+              className="text-2xl font-bold mb-4 text-orange-600 border-b pb-2"
             >
               Game Details - {selectedGame.gameId}
             </h2>
             <p className="mb-4 text-sm text-gray-600">
               Date: {new Date(selectedGame.timestamp).toLocaleString()}
             </p>
-            <div className="overflow-x-auto max-h-96">
-              <table className="min-w-full text-sm text-left text-gray-700">
-                <thead className="bg-orange-100">
-                  <tr>
-                    <th className="px-3 py-2">User ID</th>
-                    <th className="px-3 py-2">Bid Amount</th>
-                    <th className="px-3 py-2">Selected Number</th>
-                    <th className="px-3 py-2">Result</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {selectedGame.users.map((u, idx) => (
-                    <tr
-                      key={idx}
-                      className="border-b hover:bg-orange-50 transition"
-                    >
-                      <td className="px-3 py-2 font-mono">{u.userId}</td>
-                      <td className="px-3 py-2">₹{u.bidAmount}</td>
-                      <td className="px-3 py-2">{u.selectedNumber}</td>
-                      <td
-                        className={`px-3 py-2 capitalize font-semibold ${
-                          u.result === "win" ? "text-green-600" : "text-red-600"
-                        }`}
-                      >
-                        {u.result}
-                      </td>
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold mb-2 text-gray-800">
+                Player Bids
+              </h3>
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-sm text-left text-gray-700">
+                  <thead className="bg-orange-100">
+                    <tr>
+                      <th className="px-3 py-2">User</th>
+                      <th className="px-3 py-2">Total Bid</th>
+                      <th className="px-3 py-2">Total Payout</th>
+                      <th className="px-3 py-2">Result</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {selectedGame.users.map((user, idx) => (
+                      <tr
+                        key={idx}
+                        className="border-b hover:bg-orange-50 transition"
+                      >
+                        <td className="px-3 py-2 font-mono">{user.userName}</td>
+                        <td className="px-3 py-2">₹{user.totalBidAmount}</td>
+                        <td className="px-3 py-2">₹{user.totalPayout}</td>
+                        <td
+                          className={`px-3 py-2 capitalize font-semibold ${
+                            user.result === "win"
+                              ? "text-green-600"
+                              : "text-red-600"
+                          }`}
+                        >
+                          {user.result}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold mb-2 text-gray-800">
+                Digit Bids
+              </h3>
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-sm text-left text-gray-700">
+                  <thead className="bg-orange-100">
+                    <tr>
+                      <th className="px-3 py-2">Digit</th>
+                      <th className="px-3 py-2">Amount</th>
+                      <th className="px-3 py-2">Count</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Object.entries(selectedGame.users[0].digitBids).map(
+                      ([digit, bid]) => (
+                        <tr
+                          key={digit}
+                          className="border-b hover:bg-orange-50 transition"
+                        >
+                          <td className="px-3 py-2 font-mono">{digit}</td>
+                          <td className="px-3 py-2">₹{bid.amount}</td>
+                          <td className="px-3 py-2">{bid.count}</td>
+                        </tr>
+                      )
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
             <button
               onClick={() => setSelectedGame(null)}
-              className="absolute top-3 right-3 text-gray-600 hover:text-gray-900 focus:outline-none"
+              className="absolute top-3 right-3 text-gray-600 hover:text-gray-900 focus:outline-none text-2xl"
               aria-label="Close modal"
             >
               ✕
