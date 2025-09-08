@@ -82,6 +82,20 @@ export const approveUser = createAsyncThunk(
   }
 );
 
+export const DeleteUser = createAsyncThunk(
+  "user/DeleteUser",
+  async (_id, { rejectWithValue }) => {
+    try {
+      const res = await axiosInstance.delete(`/admin/user/${_id}`);
+      return res.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to delete user"
+      );
+    }
+  }
+);
+
 // ✅ Initial State
 const initialState = {
   token: localStorage.getItem("token") || null,
@@ -187,6 +201,27 @@ const userSlice = createSlice({
         state.approvedUsers.push(approvedUser);
       })
       .addCase(approveUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // DeleteUser handlers
+      .addCase(DeleteUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(DeleteUser.fulfilled, (state, action) => {
+        state.loading = false;
+        const deletedUserId =
+          action.payload.userId || action.payload._id || action.meta?.arg;
+        // Remove the deleted user from approvedUsers and pendingUsers
+        state.approvedUsers = state.approvedUsers.filter(
+          (user) => user._id !== deletedUserId
+        );
+        state.pendingUsers = state.pendingUsers.filter(
+          (user) => user._id !== deletedUserId
+        );
+      })
+      .addCase(DeleteUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
