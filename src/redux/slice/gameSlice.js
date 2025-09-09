@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axiosInstance from "../axios/axios.js"; // Adjust this path if needed
+import axiosInstance from "../axios/axios.js";
 
 // Fetch all game stats
 export const fetchGameStats = createAsyncThunk(
@@ -14,7 +14,7 @@ export const fetchGameStats = createAsyncThunk(
   }
 );
 
-// Fetch a specific game by ID (e.g. "GAME-2025-09-04-003")
+// Fetch a specific game by ID
 export const fetchGameById = createAsyncThunk(
   "game/fetchGameById",
   async (gameId, { rejectWithValue }) => {
@@ -60,7 +60,6 @@ const gameSlice = createSlice({
         state.loading = false;
         state.error = action.payload || "Failed to fetch game stats";
       })
-
       // fetchGameById
       .addCase(fetchGameById.pending, (state) => {
         state.loading = true;
@@ -78,5 +77,4 @@ const gameSlice = createSlice({
 });
 
 export const { clearError, clearCurrentGame } = gameSlice.actions;
-
 export default gameSlice.reducer;

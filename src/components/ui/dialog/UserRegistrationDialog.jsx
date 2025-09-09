@@ -108,7 +108,7 @@ const UserRegistrationDialog = ({ open, onClose }) => {
             <button
               type="submit"
               disabled={registrationStatus === "loading"}
-              className="px-5 py-2 bg-orange-600 text-white rounded hover:bg-orange-700 disabled:opacity-50 transition"
+              className="px-5 py-2 bg-gradient-to-br from-orange-500 via-red-500 to-pink-500  text-white rounded hover:bg-orange-700 disabled:opacity-50 transition"
             >
               {registrationStatus === "loading" ? "Registering..." : "Register"}
             </button>

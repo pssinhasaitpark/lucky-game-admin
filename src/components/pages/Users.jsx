@@ -242,7 +242,7 @@ const Users = () => {
         </div>
         <button
           onClick={() => setIsDialogOpen(true)}
-          className="flex items-center px-5 py-2 bg-orange-500 text-white rounded hover:bg-orange-700 disabled:opacity-50 transition"
+          className="flex items-center px-5 py-2 bg-gradient-to-br from-orange-500 via-red-500 to-pink-500  text-white rounded hover:bg-orange-700 disabled:opacity-50 transition"
         >
           <Plus className="w-3 h-3 mr-1" />
           Create User

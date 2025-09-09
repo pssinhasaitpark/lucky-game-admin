@@ -59,7 +59,7 @@ const UserDetail = () => {
         {/* User Info Card */}
         <div className="bg-white rounded-xl shadow-lg p-6 space-y-4">
           <div className="flex items-center space-x-4 mb-6">
-            <div className="w-16 h-16 rounded-full bg-orange-500 text-white flex items-center justify-center text-3xl font-semibold">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-orange-500 via-red-500 to-pink-500  text-white flex items-center justify-center text-3xl font-semibold">
               {user.name?.charAt(0).toUpperCase()}
             </div>
             <div>
@@ -107,7 +107,7 @@ const UserDetail = () => {
                 onClick={() => setActiveTab(tab)}
                 className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 ${
                   activeTab === tab
-                    ? "bg-orange-500 text-white border-b-2 border-orange-500"
+                    ? "bg-gradient-to-br from-orange-500 via-red-500 to-pink-500  text-white border-b-2 border-orange-500"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
                 aria-selected={activeTab === tab}
@@ -355,7 +355,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
           onClick={() => onPageChange(page)}
           className={`px-4 py-2 rounded transition focus:outline-none focus:ring-2 focus:ring-orange-500 ${
             page === currentPage
-              ? "bg-orange-500 text-white"
+              ? "bg-gradient-to-br from-orange-500 via-red-500 to-pink-500  text-white"
               : "bg-gray-200 hover:bg-gray-300"
           }`}
           aria-current={page === currentPage ? "page" : undefined}

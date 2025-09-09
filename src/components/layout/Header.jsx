@@ -16,7 +16,7 @@ const Header = ({ state, dispatch: dashboardDispatch }) => {
   };
 
   return (
-    <header className="bg-white/80 backdrop-blur-sm border-b px-6 py-3 sticky top-0 z-30 shadow-sm">
+    <header className="bg-white/80 backdrop-blur-sm border-b px-6 py-3 sticky top-0 z-30 shadow-sm ">
       <div className="flex items-center justify-between">
         {/* === Left Side === */}
         <div className="flex items-center space-x-4">
@@ -41,7 +41,7 @@ const Header = ({ state, dispatch: dashboardDispatch }) => {
             <input
               type="text"
               placeholder="Search..."
-              className="pl-10 pr-4 py-2 border border-yellow-200 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-transparent bg-white/50 backdrop-blur-sm transition-all duration-200"
+              className="pl-10 pr-4 py-2 border border-red-200 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-transparent bg-white/50 backdrop-blur-sm transition-all duration-200"
             />
           </div>
 
@@ -56,7 +56,7 @@ const Header = ({ state, dispatch: dashboardDispatch }) => {
           <div className="relative">
             <button
               onClick={handleProfileClick}
-              className="w-10 h-10 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full flex items-center justify-center shadow-lg"
+              className="w-10 h-10 bg-gradient-to-br from-orange-500 via-red-500 to-pink-500  rounded-full flex items-center justify-center shadow-lg"
             >
               <span className="text-white font-bold">
                 {userProfile?.name?.[0] || "A"}
@@ -65,7 +65,7 @@ const Header = ({ state, dispatch: dashboardDispatch }) => {
 
             {/* ✅ Profile Dropdown */}
             {showProfile && (
-              <div className="absolute right-0 mt-2 w-64 bg-white shadow-xl rounded-xl border border-yellow-200 p-4 z-50">
+              <div className="absolute right-0 mt-2 w-64 bg-white shadow-xl rounded-xl border border-red-200 p-4 z-50">
                 {loading ? (
                   <p className="text-sm text-gray-500">Loading profile...</p>
                 ) : userProfile ? (

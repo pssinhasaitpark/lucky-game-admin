@@ -24,7 +24,9 @@ const DashboardLayout = ({ children, state, dispatch, menuItems }) => {
         <Header state={state} dispatch={dispatch} />
 
         {/* Main content */}
-        <main className="p-6 flex-1 overflow-y-auto">{children}</main>
+        <main className="p-6 flex-1  bg-gray-50 overflow-y-hidden">
+          {children}
+        </main>
       </div>
     </div>
   );
