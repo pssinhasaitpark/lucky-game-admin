@@ -46,7 +46,8 @@ const PAGE_MAP = {
 function App() {
   const dispatch = useDispatch();
   const location = useLocation();
-  // ⏬ Dashboard state
+
+  // Dashboard state
   const {
     activeTab,
     sidebarOpen,
@@ -56,10 +57,11 @@ function App() {
     users,
     winners,
   } = useSelector((state) => state.dashboard);
-  // ⏬ User state (token, approvedUsers, loading)
+
+  // User state (token, approvedUsers, loading)
   const { token, loading, approvedUsers } = useSelector((state) => state.user);
 
-  // 🔐 Auto-login & fetch approved users on mount
+  // Auto-login & fetch approved users on mount
   useEffect(() => {
     dispatch(loginAdmin()).then((res) => {
       if (res.meta.requestStatus === "fulfilled") {
@@ -86,7 +88,10 @@ function App() {
     }
   }, [location.pathname, dispatch]);
 
-  // 📄 Render component based on active tab
+  // Determine if the current route is the Dashboard
+  const isDashboardRoute = location.pathname === "/";
+
+  // Render component based on active tab
   const renderPageContent = () => {
     const PageComponent = PAGE_MAP[activeTab] || Dashboard;
     return <PageComponent />;
@@ -107,6 +112,7 @@ function App() {
         }}
         dispatch={dispatch}
         menuItems={menuItems}
+        noScroll={isDashboardRoute} // Pass noScroll prop conditionally
       >
         <Routes>
           <Route path="/" element={renderPageContent()} />

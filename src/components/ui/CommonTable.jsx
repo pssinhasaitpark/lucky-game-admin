@@ -97,7 +97,7 @@ const CommonTable = ({
                 onClick={() => handlePageChange(page)}
                 className={`px-3 py-1 rounded ${
                   page === currentPage
-                    ? "bg-orange-500 text-white"
+                    ? "bg-gradient-to-br from-orange-500 via-red-500 to-pink-500  text-white"
                     : "bg-gray-200 hover:bg-gray-300"
                 }`}
               >

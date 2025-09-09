@@ -14,7 +14,7 @@ export default {
     function ({ addUtilities }) {
       addUtilities({
         ".border-border": {
-          "border-color": "hsl(var(--border))", // or use a fixed color like '#e5e7eb'
+          "border-color": "hsl(var(--border))",
         },
       });
     },

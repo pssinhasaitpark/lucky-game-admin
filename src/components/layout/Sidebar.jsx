@@ -26,7 +26,7 @@ const Sidebar = ({ state, dispatch, menuItems }) => {
       {/* Logo Section */}
       <div className="flex items-center justify-center h-20 border-b border-gray-200 ">
         <div className="flex items-center space-x-3">
-          <div className="bg-[#FD7F2C] p-2 rounded-xl shadow-md">
+          <div className="bg-gradient-to-br from-orange-500 via-red-500 to-pink-500 p-2 rounded-xl shadow-md">
             <Crown className="w-7 h-7 text-white" />
           </div>
           <div>
@@ -51,7 +51,7 @@ const Sidebar = ({ state, dispatch, menuItems }) => {
               className={`flex items-center w-full px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200
                 ${
                   isActive
-                    ? "bg-[#FD7F2C] text-white shadow-md"
+                    ? "bg-gradient-to-br from-orange-500 via-red-500 to-pink-500 text-white shadow-md"
                     : "text-gray-700 bg-white hover:bg-gray-100 shadow-sm"
                 }
               `}
