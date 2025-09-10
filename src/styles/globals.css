@@ -145,3 +145,17 @@
     transform: rotate(360deg);
   }
 }
+
+/* Example: Update background and text colors for dark mode */
+@layer base {
+  body {
+    @apply text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-900;
+  }
+}
+
+/* Example: Update card and sidebar styles for dark mode */
+@layer components {
+  .sidebar-item-inactive {
+    @apply text-yellow-200 hover:bg-yellow-800/50 hover:text-white hover:transform hover:scale-102 dark:text-gray-300 dark:hover:bg-gray-700;
+  }
+}

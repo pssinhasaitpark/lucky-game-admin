@@ -7,6 +7,7 @@ export const fetchGameStats = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get("/game/admin/game-stats");
+
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);

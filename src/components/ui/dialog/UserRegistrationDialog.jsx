@@ -45,13 +45,13 @@ const UserRegistrationDialog = ({ open, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg border ">
-        <h2 className="text-2xl font-bold text-black mb-5">
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md shadow-lg border border-gray-300 dark:border-gray-700">
+        <h2 className="text-2xl font-bold text-black dark:text-white mb-5">
           Register New User
         </h2>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-black mb-1">
+            <label className="block text-sm font-medium text-black dark:text-gray-200 mb-1">
               Name
             </label>
             <input
@@ -59,13 +59,13 @@ const UserRegistrationDialog = ({ open, onClose }) => {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className="w-full p-3 bg-white rounded border border-gray-300 text-gray-900 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition"
+              className="w-full p-3 bg-white dark:bg-gray-700 rounded border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition"
               required
               autoComplete="off"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-black mb-1">
+            <label className="block text-sm font-medium text-black dark:text-gray-200 mb-1">
               Email
             </label>
             <input
@@ -73,13 +73,13 @@ const UserRegistrationDialog = ({ open, onClose }) => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full p-3 bg-white rounded border border-gray-300 text-gray-900 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition"
+              className="w-full p-3 bg-white dark:bg-gray-700 rounded border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition"
               required
               autoComplete="off"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-black mb-1">
+            <label className="block text-sm font-medium text-black dark:text-gray-200 mb-1">
               Mobile
             </label>
             <input
@@ -87,13 +87,13 @@ const UserRegistrationDialog = ({ open, onClose }) => {
               name="mobile"
               value={formData.mobile}
               onChange={handleChange}
-              className="w-full p-3 bg-white rounded border border-gray-300 text-gray-900 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition"
+              className="w-full p-3 bg-white dark:bg-gray-700 rounded border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition"
               required
               autoComplete="off"
             />
           </div>
           {registrationError && (
-            <div className="text-red-600 text-sm font-semibold">
+            <div className="text-red-600 dark:text-red-400 text-sm font-semibold">
               {registrationError}
             </div>
           )}
@@ -101,14 +101,14 @@ const UserRegistrationDialog = ({ open, onClose }) => {
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition"
+              className="px-5 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-white rounded hover:bg-gray-300 dark:hover:bg-gray-500 transition"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={registrationStatus === "loading"}
-              className="px-5 py-2 bg-gradient-to-br from-orange-500 via-red-500 to-pink-500  text-white rounded hover:bg-orange-700 disabled:opacity-50 transition"
+              className="px-5 py-2 bg-gradient-to-br from-orange-500 via-red-500 to-pink-500 text-white rounded hover:opacity-90 disabled:opacity-50 transition"
             >
               {registrationStatus === "loading" ? "Registering..." : "Register"}
             </button>
