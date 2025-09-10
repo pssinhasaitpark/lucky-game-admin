@@ -22,6 +22,7 @@ import {
 import { fetchApprovedUsers } from "../../redux/slice/userSlice.js";
 import { fetchServerTime } from "../../redux/slice/getTimeSlice.js";
 import { fetchLatestWinners } from "../../redux/slice/latestWinnerSlice.js";
+import { fetchGameStats } from "../../redux/slice/gameSlice.js";
 
 const Dashboard = () => {
   const dispatch = useDispatch();
@@ -45,6 +46,10 @@ const Dashboard = () => {
   const { winners, loading: winnersLoading } = useSelector(
     (state) => state.latestWinners
   );
+  const { gameStats, loading: gameLoading } = useSelector(
+    (state) => state.game
+  );
+
   const [round, setRound] = useState(() => {
     const savedRound = localStorage.getItem("gameRound");
     return savedRound ? parseInt(savedRound) : 1;
@@ -67,6 +72,7 @@ const Dashboard = () => {
     dispatch(fetchApprovedUsers());
     dispatch(fetchServerTime());
     dispatch(fetchLatestWinners());
+    dispatch(fetchGameStats());
   }, [dispatch]);
 
   // Calculate server time offset
@@ -149,8 +155,8 @@ const Dashboard = () => {
           onClick={() => dispatch(setActiveTab("users"))}
         />
         <StatCard
-          title="Click Events"
-          value={stats.activeGames}
+          title="Total Games"
+          value={gameStats.length}
           icon={Gamepad2}
           trend={124}
         />

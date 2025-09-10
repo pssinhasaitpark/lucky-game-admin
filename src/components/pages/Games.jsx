@@ -165,34 +165,27 @@ function Games() {
 
         {/* Error Handling */}
         {error && (
-          <div className="mb-8 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 dark:border-red-400 p-4 rounded-lg shadow-md">
-            <div className="flex items-start">
-              <svg
-                className="w-5 h-5 text-red-500 dark:text-red-400 mr-3 flex-shrink-0 mt-0.5"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              <div className="flex-1">
-                <h3 className="text-red-800 dark:text-red-300 font-semibold">
-                  Error
-                </h3>
-                <p className="text-red-700 dark:text-red-300 text-sm mt-1">
-                  {error}
-                </p>
-              </div>
-              <button
-                onClick={clearErrorHandler}
-                className="ml-4 px-4 py-1.5 bg-red-500 dark:bg-red-600 text-white text-sm rounded-md hover:bg-red-600 dark:hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
-              >
-                Dismiss
-              </button>
-            </div>
+          <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+            {/* <svg
+              className="w-16 h-16 text-gray-300 dark:text-gray-500 mx-auto mb-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1}
+                d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
+              />
+            </svg> */}
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              No Games Available
+            </h3>
+            <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto">
+              Games will appear here once they are played. Check back later or
+              start a new game.
+            </p>
           </div>
         )}
 

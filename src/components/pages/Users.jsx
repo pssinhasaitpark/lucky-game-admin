@@ -1,3 +1,342 @@
+// import React, { useState, useEffect } from "react";
+// import { useSelector, useDispatch } from "react-redux";
+// import { useNavigate } from "react-router-dom";
+// import CommonTable from "../ui/CommonTable.jsx";
+// import UserRegistrationDialog from "../ui/dialog/UserRegistrationDialog.jsx";
+// import Loader from "../ui/Loader.jsx";
+// import {
+//   fetchApprovedUsers,
+//   fetchPendingUsers,
+//   approveUser,
+//   DeleteUser,
+// } from "../../redux/slice/userSlice.js";
+// import { Plus } from "lucide-react";
+
+// const Users = () => {
+//   const dispatch = useDispatch();
+//   const navigate = useNavigate();
+//   const [filter, setFilter] = useState("approved");
+//   const [approvingUserId, setApprovingUserId] = useState(null);
+//   const [deletingUserId, setDeletingUserId] = useState(null);
+//   const [isApproving, setIsApproving] = useState(false);
+//   const [isFetching, setIsFetching] = useState(false);
+//   const [isDialogOpen, setIsDialogOpen] = useState(false);
+//   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+//   const [selectedUserToDelete, setSelectedUserToDelete] = useState(null);
+
+//   const approvedUsers = useSelector((state) => state.user.approvedUsers);
+//   const pendingUsers = useSelector((state) => state.user.pendingUsers || []);
+//   const error = useSelector((state) => state.user.error);
+
+//   useEffect(() => {
+//     dispatch(fetchApprovedUsers());
+//     dispatch(fetchPendingUsers());
+//   }, [dispatch]);
+
+//   const fetchFilteredUsers = async () => {
+//     setIsFetching(true);
+//     try {
+//       if (filter === "approved") {
+//         await dispatch(fetchApprovedUsers());
+//       } else {
+//         await dispatch(fetchPendingUsers());
+//       }
+//     } finally {
+//       setIsFetching(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetchFilteredUsers();
+//   }, [filter, dispatch]);
+
+//   const handleApproveUser = async (userId) => {
+//     setIsApproving(true);
+//     setApprovingUserId(userId);
+//     try {
+//       await dispatch(approveUser(userId)).unwrap();
+//       await dispatch(fetchApprovedUsers());
+//       await dispatch(fetchPendingUsers());
+//       setFilter("approved");
+//     } catch (err) {
+//       console.error("Approve user failed:", err);
+//     } finally {
+//       setIsApproving(false);
+//       setApprovingUserId(null);
+//     }
+//   };
+
+//   const handleDeleteUser = async (userId) => {
+//     setDeletingUserId(userId);
+//     try {
+//       await dispatch(DeleteUser(userId)).unwrap();
+//       await dispatch(fetchApprovedUsers());
+//       await dispatch(fetchPendingUsers());
+//     } catch (err) {
+//       console.error("Delete user failed:", err);
+//     } finally {
+//       setDeletingUserId(null);
+//     }
+//   };
+
+//   const confirmDeleteUser = (user) => {
+//     setSelectedUserToDelete(user);
+//     setIsDeleteDialogOpen(true);
+//   };
+
+//   const handleUserClick = (userId) => {
+//     navigate(`/users/${userId}`);
+//   };
+
+//   const sortedApprovedUsers = [...approvedUsers].sort((a, b) => {
+//     return new Date(b.createdAt) - new Date(a.createdAt);
+//   });
+
+//   const usersToShow =
+//     filter === "approved" ? sortedApprovedUsers : pendingUsers;
+
+//   const tableData = error
+//     ? [
+//         {
+//           _id: "error",
+//           name: "Error",
+//           email: error,
+//           userId: "-",
+//           mobile: "-",
+//           wallet: "-",
+//           role: "-",
+//         },
+//       ]
+//     : usersToShow.length > 0
+//     ? usersToShow
+//     : [
+//         {
+//           _id: "empty",
+//           name: "No Data",
+//           email: "No users found",
+//           userId: "-",
+//           mobile: "-",
+//           wallet: "-",
+//           role: "-",
+//         },
+//       ];
+
+//   const columns = [
+//     {
+//       key: "userInfo",
+//       title: "User Info",
+//       width: "30%",
+//       render: (user) => {
+//         if (user._id === "error" || user._id === "empty") {
+//           return (
+//             <div className="flex items-center space-x-3">
+//               <div>
+//                 <p className="font-semibold text-gray-800 dark:text-gray-200">
+//                   {user.name}
+//                 </p>
+//                 <p className="text-gray-400 dark:text-gray-400 text-xs">
+//                   {user.email}
+//                 </p>
+//               </div>
+//             </div>
+//           );
+//         }
+//         return (
+//           <div
+//             className="flex items-center space-x-3 cursor-pointer"
+//             onClick={() => handleUserClick(user._id)}
+//           >
+//             <img
+//               src={`https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D`}
+//               alt={user.name}
+//               className="w-10 h-10 rounded-full object-cover"
+//             />
+//             <div>
+//               <p className="font-semibold text-gray-800 dark:text-gray-200">
+//                 {user.name}
+//               </p>
+//               <p className="text-gray-400 dark:text-gray-400 text-xs">
+//                 {user.email}
+//               </p>
+//             </div>
+//           </div>
+//         );
+//       },
+//     },
+//     {
+//       key: "userId",
+//       title: "User ID",
+//       width: "15%",
+//       render: (user) => (
+//         <span className="text-gray-700 dark:text-gray-300">
+//           {user.userId || "-"}
+//         </span>
+//       ),
+//     },
+//     {
+//       key: "mobile",
+//       title: "Mobile",
+//       width: "15%",
+//       render: (user) => (
+//         <span className="text-gray-700 dark:text-gray-300">
+//           {user.mobile || "-"}
+//         </span>
+//       ),
+//     },
+//     {
+//       key: "wallet",
+//       title: "Wallet",
+//       width: "15%",
+//       render: (user) => (
+//         <span className="text-gray-700 dark:text-gray-300">
+//           ₹{user.wallet ?? 0}
+//         </span>
+//       ),
+//     },
+//     {
+//       key: "role",
+//       title: "Role",
+//       width: "15%",
+//       render: (user) => (
+//         <span className="text-gray-700 dark:text-gray-300">
+//           {user.role || "user"}
+//         </span>
+//       ),
+//     },
+//     {
+//       key: "action",
+//       title: "Action",
+//       width: "20%",
+//       isAction: true,
+//       render: (user) => {
+//         if (user._id === "error" || user._id === "empty") {
+//           return <span>-</span>;
+//         }
+//         return (
+//           <div className="flex space-x-2">
+//             {filter === "pending" && (
+//               <button
+//                 onClick={(e) => {
+//                   e.stopPropagation();
+//                   handleApproveUser(user._id);
+//                 }}
+//                 className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 disabled:bg-gray-400 disabled:opacity-70"
+//                 disabled={approvingUserId === user._id}
+//               >
+//                 {approvingUserId === user._id ? "Approving..." : "Approve"}
+//               </button>
+//             )}
+//             <button
+//               onClick={(e) => {
+//                 e.stopPropagation();
+//                 confirmDeleteUser(user);
+//               }}
+//               className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 disabled:bg-gray-400 disabled:opacity-70"
+//               disabled={deletingUserId === user._id}
+//             >
+//               {deletingUserId === user._id ? "Deleting..." : "Delete"}
+//             </button>
+//           </div>
+//         );
+//       },
+//     },
+//   ];
+
+//   return (
+//     <div className="p-4 pb-8 bg-gray-50 dark:bg-gray-900">
+//       <div className="flex justify-between items-center mb-6">
+//         <div className="mb-4">
+//           <label
+//             htmlFor="user-filter"
+//             className="mr-2 font-semibold text-gray-700 dark:text-gray-300"
+//           >
+//             Show:
+//           </label>
+//           <select
+//             id="user-filter"
+//             value={filter}
+//             onChange={(e) => setFilter(e.target.value)}
+//             className="border border-gray-300 dark:border-gray-600 rounded px-3 py-1 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+//           >
+//             <option
+//               value="approved"
+//               className="bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+//             >
+//               Approved Users
+//             </option>
+//             <option
+//               value="pending"
+//               className="bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+//             >
+//               Pending Users
+//             </option>
+//           </select>
+//         </div>
+//         <button
+//           onClick={() => setIsDialogOpen(true)}
+//           className="flex items-center px-5 py-2 bg-gradient-to-br from-orange-500 via-red-500 to-pink-500 text-white rounded hover:from-orange-600 hover:via-red-600 hover:to-pink-600 disabled:opacity-50 transition"
+//         >
+//           <Plus className="w-3 h-3 mr-1" />
+//           Create User
+//         </button>
+//       </div>
+
+//       {isFetching || isApproving ? (
+//         <Loader />
+//       ) : (
+//         <div className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+//           <CommonTable columns={columns} data={tableData} rowsPerPage={10} />
+//         </div>
+//       )}
+
+//       <UserRegistrationDialog
+//         open={isDialogOpen}
+//         onClose={() => setIsDialogOpen(false)}
+//       />
+
+//       {/* Delete Confirmation Dialog */}
+//       {isDeleteDialogOpen && selectedUserToDelete && (
+//         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+//           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md border border-gray-200 dark:border-gray-700">
+//             <h3 className="text-lg font-bold mb-4 text-gray-800 dark:text-white">
+//               Confirm Deletion
+//             </h3>
+//             <p className="mb-6 text-gray-600 dark:text-gray-300">
+//               Are you sure you want to delete{" "}
+//               <strong className="text-gray-800 dark:text-white">
+//                 {selectedUserToDelete.name}
+//               </strong>
+//               ?
+//             </p>
+//             <div className="flex justify-end space-x-3">
+//               <button
+//                 onClick={() => {
+//                   setIsDeleteDialogOpen(false);
+//                   setSelectedUserToDelete(null);
+//                 }}
+//                 className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+//               >
+//                 Cancel
+//               </button>
+//               <button
+//                 onClick={async () => {
+//                   setIsDeleteDialogOpen(false);
+//                   await handleDeleteUser(selectedUserToDelete._id);
+//                   setSelectedUserToDelete(null);
+//                 }}
+//                 className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+//               >
+//                 Delete
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default Users;
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +348,7 @@ import {
   fetchPendingUsers,
   approveUser,
   DeleteUser,
+  blockUser,
 } from "../../redux/slice/userSlice.js";
 import { Plus } from "lucide-react";
 
@@ -18,11 +358,15 @@ const Users = () => {
   const [filter, setFilter] = useState("approved");
   const [approvingUserId, setApprovingUserId] = useState(null);
   const [deletingUserId, setDeletingUserId] = useState(null);
+  const [blockingUserId, setBlockingUserId] = useState(null);
   const [isApproving, setIsApproving] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isBlockDialogOpen, setIsBlockDialogOpen] = useState(false);
   const [selectedUserToDelete, setSelectedUserToDelete] = useState(null);
+  const [selectedUserToBlock, setSelectedUserToBlock] = useState(null);
+  const [shouldBlock, setShouldBlock] = useState(false);
 
   const approvedUsers = useSelector((state) => state.user.approvedUsers);
   const pendingUsers = useSelector((state) => state.user.pendingUsers || []);
@@ -79,9 +423,28 @@ const Users = () => {
     }
   };
 
+  const handleToggleBlockUser = async (userId, block) => {
+    setBlockingUserId(userId);
+    try {
+      await dispatch(blockUser({ _id: userId, block })).unwrap();
+      await dispatch(fetchApprovedUsers());
+      await dispatch(fetchPendingUsers());
+    } catch (error) {
+      console.error("Block/Unblock failed:", error);
+    } finally {
+      setBlockingUserId(null);
+    }
+  };
+
   const confirmDeleteUser = (user) => {
     setSelectedUserToDelete(user);
     setIsDeleteDialogOpen(true);
+  };
+
+  const confirmBlockUser = (user, block) => {
+    setSelectedUserToBlock(user);
+    setShouldBlock(block);
+    setIsBlockDialogOpen(true);
   };
 
   const handleUserClick = (userId) => {
@@ -204,6 +567,37 @@ const Users = () => {
       ),
     },
     {
+      key: "block",
+      title: "Block",
+      width: "15%",
+      render: (user) => {
+        if (user._id === "error" || user._id === "empty") return <span>-</span>;
+        const isBlocked = user.isBlocked === true;
+        return (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              confirmBlockUser(user, !isBlocked);
+            }}
+            className={`px-3 py-1 rounded text-white transition ${
+              isBlocked
+                ? "bg-yellow-500 hover:bg-yellow-600"
+                : "bg-gray-700 hover:bg-gray-800"
+            } disabled:bg-gray-400 disabled:opacity-70`}
+            disabled={blockingUserId === user._id}
+          >
+            {blockingUserId === user._id
+              ? isBlocked
+                ? "Unblocking..."
+                : "Blocking..."
+              : isBlocked
+              ? "Unblock"
+              : "Block"}
+          </button>
+        );
+      },
+    },
+    {
       key: "action",
       title: "Action",
       width: "20%",
@@ -274,59 +668,89 @@ const Users = () => {
         </div>
         <button
           onClick={() => setIsDialogOpen(true)}
-          className="flex items-center px-5 py-2 bg-gradient-to-br from-orange-500 via-red-500 to-pink-500 text-white rounded hover:from-orange-600 hover:via-red-600 hover:to-pink-600 disabled:opacity-50 transition"
+          className="flex items-center px-5 py-2 bg-gradient-to-br from-orange-500 via-red-500 to-pink-500 text-white rounded hover:from-orange-600 hover:via-red-600 hover:to-pink-600"
         >
-          <Plus className="w-3 h-3 mr-1" />
-          Create User
+          <Plus size={20} className="mr-1" />
+          Add User
         </button>
       </div>
-
-      {isFetching || isApproving ? (
+      {isFetching ? (
         <Loader />
       ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700">
-          <CommonTable columns={columns} data={tableData} rowsPerPage={10} />
-        </div>
+        <CommonTable columns={columns} data={tableData} />
       )}
-
-      <UserRegistrationDialog
-        open={isDialogOpen}
-        onClose={() => setIsDialogOpen(false)}
-      />
-
-      {/* Delete Confirmation Dialog */}
+      {isDialogOpen && (
+        <UserRegistrationDialog
+          isOpen={isDialogOpen}
+          onClose={() => setIsDialogOpen(false)}
+          onSuccess={() => {
+            setIsDialogOpen(false);
+            dispatch(fetchApprovedUsers());
+            dispatch(fetchPendingUsers());
+          }}
+        />
+      )}
+      {/* Delete confirmation dialog */}
       {isDeleteDialogOpen && selectedUserToDelete && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md border border-gray-200 dark:border-gray-700">
-            <h3 className="text-lg font-bold mb-4 text-gray-800 dark:text-white">
-              Confirm Deletion
-            </h3>
-            <p className="mb-6 text-gray-600 dark:text-gray-300">
-              Are you sure you want to delete{" "}
-              <strong className="text-gray-800 dark:text-white">
-                {selectedUserToDelete.name}
-              </strong>
-              ?
+          <div className="bg-white dark:bg-gray-800 p-6 rounded shadow-lg max-w-sm w-full">
+            <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+              Confirm Delete
+            </h2>
+            <p className="mb-6 text-gray-700 dark:text-gray-300">
+              Are you sure you want to delete user{" "}
+              <strong>{selectedUserToDelete.name}</strong>?
             </p>
-            <div className="flex justify-end space-x-3">
+            <div className="flex justify-end space-x-4">
               <button
-                onClick={() => {
-                  setIsDeleteDialogOpen(false);
-                  setSelectedUserToDelete(null);
-                }}
-                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                onClick={() => setIsDeleteDialogOpen(false)}
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 text-gray-800"
               >
                 Cancel
               </button>
               <button
-                onClick={async () => {
+                onClick={() => {
+                  handleDeleteUser(selectedUserToDelete._id);
                   setIsDeleteDialogOpen(false);
-                  await handleDeleteUser(selectedUserToDelete._id);
-                  setSelectedUserToDelete(null);
                 }}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
               >
                 Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Block/Unblock confirmation dialog */}
+      {isBlockDialogOpen && selectedUserToBlock && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded shadow-lg max-w-sm w-full">
+            <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+              Confirm {shouldBlock ? "Block" : "Unblock"}
+            </h2>
+            <p className="mb-6 text-gray-700 dark:text-gray-300">
+              Are you sure you want to {shouldBlock ? "block" : "unblock"} user{" "}
+              <strong>{selectedUserToBlock.name}</strong>?
+            </p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={() => setIsBlockDialogOpen(false)}
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 text-gray-800"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  handleToggleBlockUser(selectedUserToBlock._id, shouldBlock);
+                  setIsBlockDialogOpen(false);
+                }}
+                className={`px-4 py-2 text-white rounded hover:opacity-90 ${
+                  shouldBlock
+                    ? "bg-red-600 hover:bg-red-700"
+                    : "bg-green-600 hover:bg-green-700"
+                }`}
+              >
+                {shouldBlock ? "Block" : "Unblock"}
               </button>
             </div>
           </div>

@@ -96,12 +96,33 @@ export const DeleteUser = createAsyncThunk(
   }
 );
 
+export const blockUser = createAsyncThunk(
+  "user/blockUser",
+  async ({ _id, block }, { rejectWithValue }) => {
+    try {
+      const res = await axiosInstance.patch(`/admin/block-user/${_id}`, {
+        block,
+      });
+      return {
+        userId: _id,
+        blockStatus: block,
+        userData: res.data.data,
+      };
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to update block status"
+      );
+    }
+  }
+);
+
 // ✅ Initial State
 const initialState = {
   token: localStorage.getItem("token") || null,
   userInfo: null,
   approvedUsers: [],
   pendingUsers: [],
+  blockedUsers: [],
   loading: false,
   error: null,
   registrationStatus: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
@@ -222,6 +243,32 @@ const userSlice = createSlice({
         );
       })
       .addCase(DeleteUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(blockUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(blockUser.fulfilled, (state, action) => {
+        state.loading = false;
+        const { userId, blockStatus } = action.payload;
+
+        // Remove the user from pending and approved lists if blocked
+        if (blockStatus === true) {
+          state.approvedUsers = state.approvedUsers.filter(
+            (user) => user._id !== userId
+          );
+          state.pendingUsers = state.pendingUsers.filter(
+            (user) => user._id !== userId
+          );
+        } else {
+          // If unblocked, you could refetch or push them into approvedUsers manually
+          // Example (optional):
+          // state.approvedUsers.push(action.payload.userData);
+        }
+      })
+      .addCase(blockUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

@@ -10,9 +10,9 @@ const tabToRoute = {
   dashboard: "/",
   users: "/users",
   games: "/games",
-  winners: "/winners",
-  revenue: "/revenue",
-  settings: "/settings",
+  requests: "/requests",
+  // revenue: "/revenue",
+  // settings: "/settings",
 };
 
 const Sidebar = ({ state, dispatch, menuItems }) => {
