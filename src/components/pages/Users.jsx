@@ -8,22 +8,19 @@ import {
   fetchApprovedUsers,
   fetchPendingUsers,
   approveUser,
-  DeleteUser, // ✅ Import DeleteUser thunk
+  DeleteUser,
 } from "../../redux/slice/userSlice.js";
 import { Plus } from "lucide-react";
 
 const Users = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const [filter, setFilter] = useState("approved");
   const [approvingUserId, setApprovingUserId] = useState(null);
   const [deletingUserId, setDeletingUserId] = useState(null);
   const [isApproving, setIsApproving] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  // New states for delete confirmation dialog
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedUserToDelete, setSelectedUserToDelete] = useState(null);
 
@@ -82,7 +79,6 @@ const Users = () => {
     }
   };
 
-  // Open delete confirmation dialog
   const confirmDeleteUser = (user) => {
     setSelectedUserToDelete(user);
     setIsDeleteDialogOpen(true);
@@ -135,8 +131,12 @@ const Users = () => {
           return (
             <div className="flex items-center space-x-3">
               <div>
-                <p className="font-semibold text-gray-800">{user.name}</p>
-                <p className="text-gray-400 text-xs">{user.email}</p>
+                <p className="font-semibold text-gray-800 dark:text-gray-200">
+                  {user.name}
+                </p>
+                <p className="text-gray-400 dark:text-gray-400 text-xs">
+                  {user.email}
+                </p>
               </div>
             </div>
           );
@@ -152,8 +152,12 @@ const Users = () => {
               className="w-10 h-10 rounded-full object-cover"
             />
             <div>
-              <p className="font-semibold text-gray-800">{user.name}</p>
-              <p className="text-gray-400 text-xs">{user.email}</p>
+              <p className="font-semibold text-gray-800 dark:text-gray-200">
+                {user.name}
+              </p>
+              <p className="text-gray-400 dark:text-gray-400 text-xs">
+                {user.email}
+              </p>
             </div>
           </div>
         );
@@ -163,25 +167,41 @@ const Users = () => {
       key: "userId",
       title: "User ID",
       width: "15%",
-      render: (user) => <span>{user.userId || "-"}</span>,
+      render: (user) => (
+        <span className="text-gray-700 dark:text-gray-300">
+          {user.userId || "-"}
+        </span>
+      ),
     },
     {
       key: "mobile",
       title: "Mobile",
       width: "15%",
-      render: (user) => <span>{user.mobile || "-"}</span>,
+      render: (user) => (
+        <span className="text-gray-700 dark:text-gray-300">
+          {user.mobile || "-"}
+        </span>
+      ),
     },
     {
       key: "wallet",
       title: "Wallet",
       width: "15%",
-      render: (user) => <span>₹{user.wallet ?? 0}</span>,
+      render: (user) => (
+        <span className="text-gray-700 dark:text-gray-300">
+          ₹{user.wallet ?? 0}
+        </span>
+      ),
     },
     {
       key: "role",
       title: "Role",
       width: "15%",
-      render: (user) => <span>{user.role || "user"}</span>,
+      render: (user) => (
+        <span className="text-gray-700 dark:text-gray-300">
+          {user.role || "user"}
+        </span>
+      ),
     },
     {
       key: "action",
@@ -192,7 +212,6 @@ const Users = () => {
         if (user._id === "error" || user._id === "empty") {
           return <span>-</span>;
         }
-
         return (
           <div className="flex space-x-2">
             {filter === "pending" && (
@@ -201,7 +220,7 @@ const Users = () => {
                   e.stopPropagation();
                   handleApproveUser(user._id);
                 }}
-                className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 disabled:bg-gray-400"
+                className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 disabled:bg-gray-400 disabled:opacity-70"
                 disabled={approvingUserId === user._id}
               >
                 {approvingUserId === user._id ? "Approving..." : "Approve"}
@@ -210,9 +229,9 @@ const Users = () => {
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                confirmDeleteUser(user); // Open confirmation dialog instead of deleting directly
+                confirmDeleteUser(user);
               }}
-              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 disabled:bg-gray-400"
+              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 disabled:bg-gray-400 disabled:opacity-70"
               disabled={deletingUserId === user._id}
             >
               {deletingUserId === user._id ? "Deleting..." : "Delete"}
@@ -224,25 +243,38 @@ const Users = () => {
   ];
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-4 ">
+    <div className="p-4 pb-8 bg-gray-50 dark:bg-gray-900">
+      <div className="flex justify-between items-center mb-6">
         <div className="mb-4">
-          <label htmlFor="user-filter" className="mr-2 font-semibold">
+          <label
+            htmlFor="user-filter"
+            className="mr-2 font-semibold text-gray-700 dark:text-gray-300"
+          >
             Show:
           </label>
           <select
             id="user-filter"
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="border border-gray-300 rounded px-3 py-1"
+            className="border border-gray-300 dark:border-gray-600 rounded px-3 py-1 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300"
           >
-            <option value="approved">Approved Users</option>
-            <option value="pending">Pending Users</option>
+            <option
+              value="approved"
+              className="bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+            >
+              Approved Users
+            </option>
+            <option
+              value="pending"
+              className="bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+            >
+              Pending Users
+            </option>
           </select>
         </div>
         <button
           onClick={() => setIsDialogOpen(true)}
-          className="flex items-center px-5 py-2 bg-gradient-to-br from-orange-500 via-red-500 to-pink-500  text-white rounded hover:bg-orange-700 disabled:opacity-50 transition"
+          className="flex items-center px-5 py-2 bg-gradient-to-br from-orange-500 via-red-500 to-pink-500 text-white rounded hover:from-orange-600 hover:via-red-600 hover:to-pink-600 disabled:opacity-50 transition"
         >
           <Plus className="w-3 h-3 mr-1" />
           Create User
@@ -252,7 +284,9 @@ const Users = () => {
       {isFetching || isApproving ? (
         <Loader />
       ) : (
-        <CommonTable columns={columns} data={tableData} rowsPerPage={10} />
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+          <CommonTable columns={columns} data={tableData} rowsPerPage={10} />
+        </div>
       )}
 
       <UserRegistrationDialog
@@ -262,12 +296,17 @@ const Users = () => {
 
       {/* Delete Confirmation Dialog */}
       {isDeleteDialogOpen && selectedUserToDelete && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50">
-          <div className="bg-white rounded shadow-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-bold mb-4">Confirm Deletion</h3>
-            <p className="mb-6">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md border border-gray-200 dark:border-gray-700">
+            <h3 className="text-lg font-bold mb-4 text-gray-800 dark:text-white">
+              Confirm Deletion
+            </h3>
+            <p className="mb-6 text-gray-600 dark:text-gray-300">
               Are you sure you want to delete{" "}
-              <strong>{selectedUserToDelete.name}</strong>?
+              <strong className="text-gray-800 dark:text-white">
+                {selectedUserToDelete.name}
+              </strong>
+              ?
             </p>
             <div className="flex justify-end space-x-3">
               <button
@@ -275,7 +314,7 @@ const Users = () => {
                   setIsDeleteDialogOpen(false);
                   setSelectedUserToDelete(null);
                 }}
-                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
               >
                 Cancel
               </button>
@@ -285,7 +324,7 @@ const Users = () => {
                   await handleDeleteUser(selectedUserToDelete._id);
                   setSelectedUserToDelete(null);
                 }}
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
               >
                 Delete
               </button>

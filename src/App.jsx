@@ -28,9 +28,9 @@ const menuItems = [
   { id: "dashboard", name: "Dashboard", icon: BarChart3 },
   { id: "users", name: "Users", icon: UsersIcon },
   { id: "games", name: "Games", icon: Gamepad2 },
-  { id: "winners", name: "Winners", icon: Trophy },
-  { id: "revenue", name: "Revenue", icon: DollarSign },
-  { id: "settings", name: "Settings", icon: SettingsIcon },
+  // { id: "winners", name: "Winners", icon: Trophy },
+  // { id: "revenue", name: "Revenue", icon: DollarSign },
+  // { id: "settings", name: "Settings", icon: SettingsIcon },
 ];
 
 // Tab-to-component map
@@ -79,12 +79,12 @@ function App() {
       dispatch(setActiveTab("users"));
     } else if (path.startsWith("/games")) {
       dispatch(setActiveTab("games"));
-    } else if (path.startsWith("/winners")) {
-      dispatch(setActiveTab("winners"));
-    } else if (path.startsWith("/revenue")) {
-      dispatch(setActiveTab("revenue"));
-    } else if (path.startsWith("/settings")) {
-      dispatch(setActiveTab("settings"));
+      // } else if (path.startsWith("/winners")) {
+      // dispatch(setActiveTab("winners"));
+      // } else if (path.startsWith("/revenue")) {
+      // dispatch(setActiveTab("revenue"));
+      // } else if (path.startsWith("/settings")) {
+      // dispatch(setActiveTab("settings"));
     }
   }, [location.pathname, dispatch]);
 
@@ -119,9 +119,9 @@ function App() {
           <Route path="/users" element={<Users />} />
           <Route path="/users/:userId" element={<UserDetail />} />
           <Route path="/games" element={<Games />} />
-          <Route path="/winners" element={<Winners />} />
-          <Route path="/revenue" element={<Revenue />} />
-          <Route path="/settings" element={<Settings />} />
+          {/* <Route path="/winners" element={<Winners />} /> */}
+          {/* <Route path="/revenue" element={<Revenue />} /> */}
+          {/* <Route path="/settings" element={<Settings />} /> */}
         </Routes>
       </DashboardLayout>
       <ToastContainer />
